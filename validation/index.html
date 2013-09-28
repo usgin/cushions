@@ -39,9 +39,14 @@
     
     <ul id="validation"></ul>
     
+    <h2>Mom says put the Cushions back?</h2>
+    <ul id="dumps">
+      <a href="_list/asXml/lookupByTitle?include_docs=true" id="get-xml" class="btn btn-info btn-large">Get XML</a>
+      <a href="_list/asCsv/lookupByTitle?include_docs=true" id="get-csv" class="btn btn-info btn-large">Get CSV</a>
+      <a href="_list/asGeoJson/lookupByTitle?include_docs=true" id="get-geojson" class="btn btn-info btn-large">Get GeoJSON</a>
+    </ul>
+    
     <script>
-      //var dbName = 'stanford-csv';
-      
       d3.json(window.location.pathname.replace('index.html', ''), function (err, design) {
         if (err) { console.log(err); return; }
         
