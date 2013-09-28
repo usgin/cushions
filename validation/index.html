@@ -15,9 +15,9 @@
       }
       li { list-style-type: none; }
       .label { margin-right: 10px; display: inline-block; width: 50px; }
+      .progress { width: 500px; }
     </style>
     <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"></script>
   </head>
   <body>
     <h1>Protect yourself from Metadata with Cushions</h1>
@@ -33,9 +33,11 @@
     <h2 id="validation-message"></h2>
     
     <ul id="bulk-options">
-      <button id="auto-correct-all" class="btn btn-success btn-large">Apply Automatic Corrections</button>
+      <button id="auto-correct-all" class="btn btn-success btn-large" onclick="runCorrections()">Apply Automatic Corrections</button>
       <a id="run-away" class="btn btn-danger btn-large" href="http://coolrunn.in">Run Away?</a>
     </ul>
+    
+    <div id="progress-container"></div>
     
     <ul id="validation"></ul>
     
@@ -45,6 +47,10 @@
       <a href="_list/asCsv/lookupByTitle?include_docs=true" id="get-csv" class="btn btn-info btn-large">Get CSV</a>
       <a href="_list/asGeoJson/lookupByTitle?include_docs=true" id="get-geojson" class="btn btn-info btn-large">Get GeoJSON</a>
     </ul>
+    
+    <script src="underscore.min.js"></script>
+    <script src="backbone.min.js"></script>
+    <script src="autocorrect.js"></script>
     
     <script>
       d3.json(window.location.pathname.replace('index.html', ''), function (err, design) {

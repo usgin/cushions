@@ -60,7 +60,12 @@ function updateValidation() {
         var filesToAdd = [
           ['index.html', 'text/html'], 
           ['couch-fort.png', 'image/png'],
-          ['empty-sheet.csv', 'text/csv']
+          ['empty-sheet.csv', 'text/csv'],
+          ['autocorrect.js', 'text/javascript'],
+          ['backbone.min.js', 'text/javascript'],
+          ['backbone-min.map', 'application/json'],
+          ['underscore.min.js', 'text/javascript'],
+          ['underscore-min.map', 'application/json']
         ];
         
         function addFile(rev, filename, filetype, callback) {
