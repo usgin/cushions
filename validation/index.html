@@ -40,9 +40,9 @@
     <ul id="validation"></ul>
     
     <script>
-      var dbName = 'stanford-csv';
+      //var dbName = 'stanford-csv';
       
-      d3.json('/' + dbName + '/_design/validation', function (err, design) {
+      d3.json(window.location.pathname.replace('index.html', ''), function (err, design) {
         if (err) { console.log(err); return; }
         
         var criteria = _.keys(design.criteria);
@@ -58,7 +58,7 @@
           .append('ul');
           
         _.each(criteria, function (viewName) {
-          var baseUrl = '/' + dbName + '/_design/validation/_view/' + viewName + '?key=',
+          var baseUrl = '_view/' + viewName + '?key=',
               invalidUrl = baseUrl + 'false',
               validUrl = baseUrl + 'true';
               
@@ -76,7 +76,7 @@
             
             _.each(response.rows, function (row) {
               ids.push(row.id);
-              urls.push('/' + dbName + '/' + row.id);
+              urls.push(window.location.pathname.replace('_design/validation', row.id));
               responses[row.id] = row.value;
               fixesAvailable = row.value.hasOwnProperty('suggestion');
             });
@@ -95,7 +95,6 @@
               
             result.append('a')
               .attr('href', invalidUrl)
-              //.classed('text-success', winner)
               .classed('text-danger', !winner)
               .text(message);
           });
@@ -107,7 +106,7 @@
             var winner = response.rows.length > 0;
             
             urls = _.map(response.rows, function (row) {
-              return '/' + dbName + '/' + row.id;
+              return window.location.pathname.replace('_design/validation', row.id);
             });
             
             var result = d3.select('#' + viewName).select('ul')
@@ -121,10 +120,8 @@
               .attr('href', validUrl)
               .classed('text-danger', !winner)
               .text(urls.length + ' rows are valid');
-                
           });
         });
-        
       });
     </script>
   </body>

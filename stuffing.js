@@ -59,7 +59,8 @@ function updateValidation() {
         
         var filesToAdd = [
           ['index.html', 'text/html'], 
-          ['couch-fort.png', 'image/png']
+          ['couch-fort.png', 'image/png'],
+          ['empty-sheet.csv', 'text/csv']
         ];
         
         function addFile(rev, filename, filetype, callback) {
