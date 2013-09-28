@@ -51,7 +51,7 @@ module.exports = function (doc) {
       suggestedBounds.north_bounding_longitude = suggestedBounds.north_bounding_latitude - 180;  
     }
     if (doc.south_bounding_latitude < -90) {
-      suggestedBounds.south_bounding_latitude = doc.south_bounding_latitude + 180;
+      suggestedBounds.south_bounding_latitude = suggestedBounds.south_bounding_latitude + 180;
     }
     if (suggestedBounds.south_bounding_latitude > 90) {
       suggestedBounds.south_bounding_latitude = suggestedBounds.south_bounding_latitude - 180;  

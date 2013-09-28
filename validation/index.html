@@ -1,0 +1,131 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Build a fort</title>
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+    <style type="text/css">
+      body { 
+        margin: 25px; 0px;
+        background-image: url('couch-fort.png');
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-position: 500px 50px;
+      }
+      li { list-style-type: none; }
+      .label { margin-right: 10px; display: inline-block; width: 50px; }
+    </style>
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"></script>
+  </head>
+  <body>
+    <h1>Protect yourself from Metadata with Cushions</h1>
+    <blockquote>
+      Metadata is like a pillow-fight except it sucks and the pillows are full of rocks. - Ryan Clark, 2013
+    </blockquote>
+    <h2>Ground Rules:</h2>
+    <ul>
+      <li>Use <a href="https://www.google.com/intl/en/chrome/browser/">Google Chrome</a>.</li>
+      <li>Install <a href="https://chrome.google.com/webstore/detail/json-formatter/bcjindcccaagfpapjjmafapmmgkkhgoa">this extension</a>.</li>
+      <li>Compile metadata <a href="empty-sheet.csv">with this spreadsheet</a>.</li>
+    </ul>
+    <h2 id="validation-message"></h2>
+    
+    <ul id="bulk-options">
+      <button id="auto-correct-all" class="btn btn-success btn-large">Apply Automatic Corrections</button>
+      <a id="run-away" class="btn btn-danger btn-large" href="http://coolrunn.in">Run Away?</a>
+    </ul>
+    
+    <ul id="validation"></ul>
+    
+    <script>
+      var dbName = 'stanford-csv';
+      
+      d3.json('/' + dbName + '/_design/validation', function (err, design) {
+        if (err) { console.log(err); return; }
+        
+        var criteria = _.keys(design.criteria);
+        
+        d3.select('#validation').selectAll('li')
+            .data(criteria)
+          .enter().append('li')
+            .attr('id', function (d) { return d; })
+          .append('h3')
+            .text(function (d) { return design.criteria[d]; });
+        
+        d3.select('#validation').selectAll('li')
+          .append('ul');
+          
+        _.each(criteria, function (viewName) {
+          var baseUrl = '/' + dbName + '/_design/validation/_view/' + viewName + '?key=',
+              invalidUrl = baseUrl + 'false',
+              validUrl = baseUrl + 'true';
+              
+          // Start request for invalid records
+          d3.json(invalidUrl, function (err, response) {
+            if (err) { console.log(err); return; }
+            
+            var winner = response.rows.length === 0;
+            
+            if (!winner) {
+              d3.select('#validation-message').text("I'm sorry, your metadata is ugly...");
+            }
+            
+            var urls = [], ids = [], responses = {}, fixesAvailable = false;
+            
+            _.each(response.rows, function (row) {
+              ids.push(row.id);
+              urls.push('/' + dbName + '/' + row.id);
+              responses[row.id] = row.value;
+              fixesAvailable = row.value.hasOwnProperty('suggestion');
+            });
+            
+            var result = d3.select('#' + viewName).select('ul')
+              .append('li');
+            result.append('span')
+              .classed('label', true)
+              .classed('label-success', winner)
+              .classed('label-danger', !winner)
+              .text(winner ? 'Yay' : 'Crap');
+              
+            var message = fixesAvailable && !winner ? 
+              urls.length + ' rows are invalid, but automatic corrections are available.' :
+              urls.length + ' rows are invalid.';
+              
+            result.append('a')
+              .attr('href', invalidUrl)
+              //.classed('text-success', winner)
+              .classed('text-danger', !winner)
+              .text(message);
+          });
+          
+          // Start request for valid records
+          d3.json(validUrl, function (err, response) {
+            if (err) { console.log(err); return; }
+            
+            var winner = response.rows.length > 0;
+            
+            urls = _.map(response.rows, function (row) {
+              return '/' + dbName + '/' + row.id;
+            });
+            
+            var result = d3.select('#' + viewName).select('ul')
+              .append('li');
+            result.append('span')
+              .classed('label', true)
+              .classed('label-info', winner)
+              .classed('label-danger', !winner)
+              .text(winner ? 'Great' : 'Oh');
+            result.append('a')
+              .attr('href', validUrl)
+              .classed('text-danger', !winner)
+              .text(urls.length + ' rows are valid');
+                
+          });
+        });
+        
+      });
+    </script>
+  </body>
+</html>

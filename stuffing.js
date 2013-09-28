@@ -1,7 +1,8 @@
 var csv = require('csv'),
     nano = require('nano')('http://localhost:5984'),
     prompt = require('prompt'),
-    validation = require('./validation')
+    validation = require('./validation'),
+    fs = require('fs'),
 
     argv = require('optimist')
       .alias('f', 'csvPath')
@@ -53,9 +54,49 @@ function updateValidation() {
       
       if (doc) { validation._rev = doc._rev; }
       
-      db.insert(validation, '_design/validation', function (err, doc) {
+      db.insert(validation, '_design/validation', function (err, response) {
         if (err) { console.log(err); return; }
-        console.log('Validation criteria updated.');
+        
+        fs.readFile('validation/index.html', function (err, data) {
+          db.attachment.insert(
+            '_design/validation', 
+            'index.html', 
+            data, 
+            'text/html', 
+            { rev: response.rev }, 
+            function (err, response) {
+              fs.readFile('validation/couch-fort.png', function (err, data) {
+                db.attachment.insert(
+                  '_design/validation', 
+                  'couch-fort.png', 
+                  data, 
+                  'image/png', 
+                  { rev: response.rev }, 
+                  function (err, response) {
+                    console.log('Validation criteria updated.');
+                  }
+                );
+              });
+            }
+          );
+        })
+        /*
+        fs.createReadStream('validation/index.html').pipe(
+          db.attachment.insert('_design/validation', 'index.html', null, 'text/html', { rev: response.rev })
+        );
+        setTimeout(
+          function () {
+            db.get('_design/validation', function (err, design) {
+              if (err) { console.log(err); return; }
+              
+              fs.createReadStream('validation/empty-sheet.csv').pipe(
+                db.attachment.insert('_design/validation', 'empty-sheet.csv', null, 'text/csv', { rev: design._rev })
+              );
+              console.log('Validation criteria updated.');
+            });
+          }, 1000
+        );
+        */
       });
     });
   }

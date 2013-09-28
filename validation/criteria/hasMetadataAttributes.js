@@ -27,7 +27,7 @@ module.exports = function (doc) {
     suggestion.metadata_date = [year, month, day].join('-') + 'T' + [hour, minute, second].join(':');
   }
   
-  if (!doc.hasOwnProperty('metadata_uuid')) {
+  if (!doc.hasOwnProperty('metadata_uuid') || doc.metadata_uuid.length > 0) {
     suggestion.metadata_uuid = doc._id;
   }
   

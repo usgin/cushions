@@ -5,6 +5,15 @@ var sumReduce = (function (keys, values) {
 module.exports = {
   id: '_design/validation',
   language: 'javascript',
+  criteria: {
+    'hasTitle': '...has a title:',
+    'hasDescription': '...has a description:',
+    'validPubDate': '...publication date is valid:',
+    'hasBounds': '...bounding box is valid:',
+    'hasMetadataContact': '...has some metadata contact info:',
+    'hasOriginator': '...has some originator contact info:',
+    'hasMetadataAttributes': '...has a metadata ID and date:'
+  },
   views: {
     lookupByTitle: {
       map: require('./lookups/byTitle').toString()
