@@ -57,46 +57,32 @@ function updateValidation() {
       db.insert(validation, '_design/validation', function (err, response) {
         if (err) { console.log(err); return; }
         
-        fs.readFile('validation/index.html', function (err, data) {
-          db.attachment.insert(
-            '_design/validation', 
-            'index.html', 
-            data, 
-            'text/html', 
-            { rev: response.rev }, 
-            function (err, response) {
-              fs.readFile('validation/couch-fort.png', function (err, data) {
-                db.attachment.insert(
-                  '_design/validation', 
-                  'couch-fort.png', 
-                  data, 
-                  'image/png', 
-                  { rev: response.rev }, 
-                  function (err, response) {
-                    console.log('Validation criteria updated.');
-                  }
-                );
-              });
-            }
-          );
-        })
-        /*
-        fs.createReadStream('validation/index.html').pipe(
-          db.attachment.insert('_design/validation', 'index.html', null, 'text/html', { rev: response.rev })
-        );
-        setTimeout(
-          function () {
-            db.get('_design/validation', function (err, design) {
+        var filesToAdd = [
+          ['index.html', 'text/html'], 
+          ['couch-fort.png', 'image/png']
+        ];
+        
+        function addFile(rev, filename, filetype, callback) {
+          fs.readFile('validation/' + filename, function (err, data) {
+            if (err) { callback(err); return; }
+            db.attachment.insert( '_design/validation', filename, data, filetype, { rev: rev }, callback);
+          });
+        }
+        
+        function addFiles(rev) {
+          if (filesToAdd.length > 0) {
+            var item = filesToAdd.pop();
+            addFile(rev, item[0], item[1], function (err, body) {
               if (err) { console.log(err); return; }
-              
-              fs.createReadStream('validation/empty-sheet.csv').pipe(
-                db.attachment.insert('_design/validation', 'empty-sheet.csv', null, 'text/csv', { rev: design._rev })
-              );
-              console.log('Validation criteria updated.');
+              addFiles(body.rev);
             });
-          }, 1000
-        );
-        */
+          } else {
+            console.log('Validation criteria updated.');
+          }
+        }
+        
+        addFiles(response.rev);
+        
       });
     });
   }
