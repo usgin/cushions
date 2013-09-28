@@ -59,19 +59,21 @@ function updateValidation() {
         
         var filesToAdd = [
           ['index.html', 'text/html'], 
-          ['couch-fort.png', 'image/png'],
-          ['empty-sheet.csv', 'text/csv'],
-          ['autocorrect.js', 'text/javascript'],
-          ['backbone.min.js', 'text/javascript'],
-          ['backbone-min.map', 'application/json'],
-          ['underscore.min.js', 'text/javascript'],
-          ['underscore-min.map', 'application/json']
+          ['client/couch-fort.png', 'image/png'],
+          ['client/empty-sheet.csv', 'text/csv'],
+          ['client/autocorrect.js', 'text/javascript'],
+          ['client/underscore.min.js', 'text/javascript'],
+          ['client/underscore-min.map', 'application/json']
         ];
         
         function addFile(rev, filename, filetype, callback) {
           fs.readFile('validation/' + filename, function (err, data) {
             if (err) { callback(err); return; }
-            db.attachment.insert( '_design/validation', filename, data, filetype, { rev: rev }, callback);
+            db.attachment.insert(
+              '_design/validation', 
+              filename.replace('client/', ''), 
+              data, filetype, { rev: rev }, callback
+            );
           });
         }
         
