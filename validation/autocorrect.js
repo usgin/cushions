@@ -1,8 +1,12 @@
-function runCorrections() {
-  var criteria, bar, caption, recordsToFix
+function runCorrections(corrections) {
+  var criteria, bar, caption, recordsToFix,
+      dbName = window.location.pathname.split('/')[1],
       at = 0;
   
-  AutoCorrect()
+  io.connect('http://localhost:3000')
+  
+    .emit('autocorrect', dbName, corrections)
+  
     .on('gatheringSuggestions', function (count) {
       criteria = count;
       
@@ -13,7 +17,7 @@ function runCorrections() {
       bar = d3.select('#progress-container').append('div')
         .classed('progress', true)
         .classed('progress-striped', true)
-        //.classed('active', true)
+        .classed('active', true)
       .append('div')
         .classed('progress-bar', true)
         .classed('progress-bar-warning', true)
@@ -28,96 +32,34 @@ function runCorrections() {
   
     .on('gatheredSuggestions', function () {
       bar.style('width', '100%');
-      caption.text('Fort complete!');
+      caption.text('Fort complete, waiting for woozles...');
     })
   
     .on('fixingRecords', function (recordCount) {
       recordsToFix = recordCount;
-      at = 0;
     })
   
-    .on('recordFixed', function () {
-      caption.text('Keeping you safe...');
-      bar.style('width', 100 * (at / recordsToFix) + '%');
+    .on('fixedRecord', function (numberFinished) {
+      caption.text('Here they come! Cushions are keeping you safe...');
+      bar
+        .style('width', 100 * (numberFinished / recordsToFix) + '%')
+        .classed('progress-bar-danger', true)
+        .classed('progress-bar-warning', false);
     })
   
     .on('allFixed', function () {
-      caption.text('Victory!');
+      caption.text('Victory!')
+        .append('a')
+          .attr('href', 'index.html')
+          .text('How did it go?')
+          .classed('btn', true)
+          .classed('btn-primary', true)
+          .classed('btn-sm', true);
+      bar
+        .style('width', '100%')
+        .classed('progress-bar-success', true)
+        .classed('progress-bar-danger', false);
+      this.disconnect();
     });
     
-}
-
-function AutoCorrect() {
-  
-  var fixer = _.extend({}, Backbone.Events),
-      suggestions = {};
-  
-  d3.json(window.location.pathname.replace('index.html', ''), function (err, design) {
-    if (err) { console.log(err); return; }
-    
-    var criteria = _.keys(design.criteria);
-    
-    function getSuggestionSet(viewName, callback) {
-      d3.json('_view/' + viewName + '?key=false', function (err, response) {
-        if (err) { callback(err); return; }
-        
-        if (response.rows.length > 0 && response.rows[0].value.hasOwnProperty('suggestion')) {
-          response.rows.forEach(function (row) {
-            if (_.contains(_.keys(suggestions), row.id)) {
-              _.extend(suggestions[row.id], row.value.suggestion);  
-            } else {
-              suggestions[row.id] = row.value.suggestion;
-            }
-          });
-        }
-        
-        callback(null, null);
-      });
-    }
-    
-    function getSuggestions() {
-      if (criteria.length > 0) {
-        getSuggestionSet(criteria.pop(), function (err) {
-          if (err) { fixer.trigger('error', err); return; }
-          fixer.trigger('finishedCriteria');
-          getSuggestions();
-        });
-      } else {
-        fixer.trigger('gatheredSuggestions');
-        doCorrections();
-      }
-    }
-    
-    fixer.trigger('gatheringSuggestions', criteria.length);
-    getSuggestions();
-    
-  });
-  
-  function doCorrections() {
-    var ids = _.keys(suggestions),
-        i = 0;
-    
-    fixer.trigger('fixingRecords', ids.length);
-    
-    _.each(ids, function (id) {
-      var url = window.location.pathname.replace('_design/validation/index.html', id);
-      d3.json(url, function (err, doc) {
-        if (err) { fixer.trigger('error', err); return; }
-        d3.xhr(url, 'application/json')
-          .send('PUT', _.extend(doc, suggestions[id]), function (err, response) {
-            if (!err) {
-              fixer.trigger('fixedRecord');
-            } else {
-              fixer.trigger('error', err);
-            }
-            i++;
-            if (i === ids.length) {
-              fixer.trigger('allFixed');
-            }
-          });
-      });
-    });
-  }
-  
-  return fixer;
 }

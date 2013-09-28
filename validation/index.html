@@ -16,6 +16,9 @@
       li { list-style-type: none; }
       .label { margin-right: 10px; display: inline-block; width: 50px; }
       .progress { width: 500px; }
+      #progress-container .btn { margin-left: 30px; }
+      #bulk-options { margin-bottom: 15px; }
+      #bulk-options button { margin-left: 30px; }
     </style>
     <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
   </head>
@@ -30,12 +33,9 @@
       <li>Install <a href="https://chrome.google.com/webstore/detail/json-formatter/bcjindcccaagfpapjjmafapmmgkkhgoa">this extension</a>.</li>
       <li>Compile metadata <a href="empty-sheet.csv">with this spreadsheet</a>.</li>
     </ul>
-    <h2 id="validation-message"></h2>
+    <h2 id="validation-message">Your metadata...</h2>
     
-    <ul id="bulk-options">
-      <button id="auto-correct-all" class="btn btn-success btn-large" onclick="runCorrections()">Apply Automatic Corrections</button>
-      <a id="run-away" class="btn btn-danger btn-large" href="http://coolrunn.in">Run Away?</a>
-    </ul>
+    <div id="bulk-options"></div>
     
     <div id="progress-container"></div>
     
@@ -43,11 +43,12 @@
     
     <h2>Mom says put the Cushions back?</h2>
     <ul id="dumps">
-      <a href="_list/asXml/lookupByTitle?include_docs=true" id="get-xml" class="btn btn-info btn-large">Get XML</a>
-      <a href="_list/asCsv/lookupByTitle?include_docs=true" id="get-csv" class="btn btn-info btn-large">Get CSV</a>
-      <a href="_list/asGeoJson/lookupByTitle?include_docs=true" id="get-geojson" class="btn btn-info btn-large">Get GeoJSON</a>
+      <a href="_list/asXml/lookupByTitle?include_docs=true" id="get-xml" class="btn btn-info">Get XML</a>
+      <a href="_list/asCsv/lookupByTitle?include_docs=true" id="get-csv" class="btn btn-info">Get CSV</a>
+      <a href="_list/asGeoJson/lookupByTitle?include_docs=true" id="get-geojson" class="btn btn-info">Get GeoJSON</a>
     </ul>
     
+    <script src="http://localhost:3000/socket.io/socket.io.js"></script>
     <script src="underscore.min.js"></script>
     <script src="backbone.min.js"></script>
     <script src="autocorrect.js"></script>
@@ -81,6 +82,28 @@
             
             if (!winner) {
               d3.select('#validation-message').text("I'm sorry, your metadata is ugly...");
+              
+              var opts = d3.select('#bulk-options').selectAll('button')
+                .data([
+                  { 
+                    id: 'auto-correct-all', 
+                    cls: 'btn-success', 
+                    text: 'Apply Automatic Corrections',
+                    onclick: runCorrections
+                  }, {
+                    id: 'run-away',
+                    cls: 'btn-danger',
+                    text: 'Run Away',
+                    onclick: function () { window.location.assign('http://coolrunn.in'); }
+                  }
+                ], function (d) { return d.id; }).enter()
+                .append('button')
+                  .attr('id', function (d) { return d.id; })
+                  .classed('btn', true)
+                  .classed('btn-success', function (d) { return d.cls === 'btn-success'; })
+                  .classed('btn-danger', function (d) { return d.cls === 'btn-danger'; })
+                  .on('click', function (d) { d.onclick(); })
+                  .text(function(d) { return d.text; })
             }
             
             var urls = [], ids = [], responses = {}, fixesAvailable = false;

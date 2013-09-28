@@ -1,11 +1,8 @@
-var sumReduce = (function (keys, values) {
-  return sum(values);
-}).toString();
-
 module.exports = {
   id: '_design/validation',
   language: 'javascript',
   criteria: {
+    'probablyNotTruncated': '...doesn\'t look truncated:',
     'hasTitle': '...has a title:',
     'hasDescription': '...has a description:',
     'validPubDate': '...publication date is valid:',
@@ -17,6 +14,9 @@ module.exports = {
   views: {
     lookupByTitle: {
       map: require('./lookups/byTitle').toString()
+    },
+    probablyNotTruncated: {
+      map: require('./criteria/probablyNotTruncated').toString()  
     },
     hasTitle: {
       map: require('./criteria/hasTitle').toString()

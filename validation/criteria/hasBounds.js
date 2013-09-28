@@ -45,12 +45,12 @@ module.exports = function (doc) {
       suggestedBounds.west_bounding_longitude = suggestedBounds.west_bounding_longitude - 360;
     }
     if (suggestedBounds.north_bounding_latitude < -90) {
-      suggestedBounds.north_bounding_longitude = suggestedBounds.north_bounding_latitude + 180;
+      suggestedBounds.north_bounding_latitude = suggestedBounds.north_bounding_latitude + 180;
     }
     if (suggestedBounds.north_bounding_latitude > 90) {
-      suggestedBounds.north_bounding_longitude = suggestedBounds.north_bounding_latitude - 180;  
+      suggestedBounds.north_bounding_latitude = suggestedBounds.north_bounding_latitude - 180;  
     }
-    if (doc.south_bounding_latitude < -90) {
+    if (suggestedBounds.south_bounding_latitude < -90) {
       suggestedBounds.south_bounding_latitude = suggestedBounds.south_bounding_latitude + 180;
     }
     if (suggestedBounds.south_bounding_latitude > 90) {

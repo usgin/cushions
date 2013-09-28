@@ -5,7 +5,7 @@ module.exports = function (doc) {
   
   var hasContent = hasFields ?
     doc.metadata_uuid.length > 0 &&
-    doc.metadata_date > 0 : false;
+    doc.metadata_date.length > 0 : false;
   
   var dateExp = /^[1-2][0-9]{3}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-6][0-9]:[0-6][0-9]$/,
       isValidDate = doc.hasOwnProperty('metadata_date') && doc.metadata_date.search(dateExp) !== -1,
@@ -27,12 +27,23 @@ module.exports = function (doc) {
     suggestion.metadata_date = [year, month, day].join('-') + 'T' + [hour, minute, second].join(':');
   }
   
-  if (!doc.hasOwnProperty('metadata_uuid') || doc.metadata_uuid.length > 0) {
+  var isValidUuid = doc.hasOwnProperty('metadata_uuid') && doc.metadata_uuid.length > 0;
+  
+  if (!isValidUuid) {
     suggestion.metadata_uuid = doc._id;
   }
   
+  var problem = !hasFields ? 'Missing metadata info fields' :
+    !hasContent ? 'Blank metadata info fields' :
+    !isValidDate ? 'Invalid metadata_date': 
+    !isValidUuid ? 'Invalid metadata_uuid': null;
+  
+  var result = {};
+  if (problem) { result.problem = problem; }
+  if (Object.keys(suggestion).length > 0) { result.suggestion = suggestion; }
+  
   emit(
-    hasFields && hasContent && isValidDate,
-    Object.keys(suggestion).length > 0 ? { suggestion: suggestion } : {}
+    hasFields && hasContent && isValidDate && isValidUuid,
+    result
   );
 };
