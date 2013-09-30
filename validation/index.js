@@ -10,7 +10,8 @@ module.exports = {
     'hasMetadataContact': '...has some metadata contact info:',
     'hasOriginator': '...has some originator contact info:',
     'hasMetadataAttributes': '...has a metadata ID and date:',
-    'validPhoneNumbers': '...contains valid phone numbers:'
+    'validPhoneNumbers': '...contains valid phone numbers:',
+    'validTemporalRange': '...contains a valid temporal range:'
   },
   views: {
     lookupByTitle: {
@@ -42,6 +43,9 @@ module.exports = {
     },
     validPhoneNumbers: {
       map: require('./criteria/validPhoneNumbers').toString()
+    },
+    validTemporalRange: {
+      map: require('./criteria/validTemporalRange').toString()  
     }
   },
   lists: {
