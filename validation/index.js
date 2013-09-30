@@ -9,7 +9,8 @@ module.exports = {
     'hasBounds': '...bounding box is valid:',
     'hasMetadataContact': '...has some metadata contact info:',
     'hasOriginator': '...has some originator contact info:',
-    'hasMetadataAttributes': '...has a metadata ID and date:'
+    'hasMetadataAttributes': '...has a metadata ID and date:',
+    'validPhoneNumbers': '...contains valid phone numbers:'
   },
   views: {
     lookupByTitle: {
@@ -38,6 +39,9 @@ module.exports = {
     },
     hasMetadataAttributes: {
       map: require('./criteria/hasMetadataAttributes').toString()
+    },
+    validPhoneNumbers: {
+      map: require('./criteria/validPhoneNumbers').toString()
     }
   },
   lists: {
