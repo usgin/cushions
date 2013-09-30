@@ -42,9 +42,9 @@
     
     <h2>Mom says put the Cushions back?</h2>
     <ul id="dumps">
-      <a href="_list/asXml/lookupByTitle?include_docs=true" id="get-xml" class="btn btn-info">Get XML</a>
-      <a href="_list/asCsv/lookupByTitle?include_docs=true" id="get-csv" class="btn btn-info">Get CSV</a>
-      <a href="_list/asGeoJson/lookupByTitle?include_docs=true" id="get-geojson" class="btn btn-info">Get GeoJSON</a>
+      <a href="_list/asXml/lookupByTitle?include_docs=true" id="get-xml" class="btn btn-primary">Get XML</a>
+      <a href="_list/asCsv/lookupByTitle?include_docs=true" id="get-csv" class="btn btn-primary">Get CSV</a>
+      <a href="_list/asGeoJson/lookupByTitle?include_docs=true" id="get-geojson" class="btn btn-primary">Get GeoJSON</a>
     </ul>
     
     <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
@@ -118,7 +118,7 @@
               .append('li');
             result.append('span')
               .classed('label', true)
-              .classed('label-success', winner)
+              .classed('label-info', winner)
               .classed('label-danger', !winner)
               .text(winner ? 'Yay' : 'Crap');
               
