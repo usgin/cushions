@@ -9,9 +9,11 @@ module.exports = {
     'hasBounds': '...bounding box is valid:',
     'hasMetadataContact': '...has some metadata contact info:',
     'hasOriginator': '...has some originator contact info:',
+    'hasDistributor': '...has some distributor contact info:',
     'hasMetadataAttributes': '...has a metadata ID and date:',
     'validPhoneNumbers': '...contains valid phone numbers:',
-    'validTemporalRange': '...contains a valid temporal range:'
+    'validTemporalRange': '...contains a valid temporal range:',
+    'validLanguageCodes': '...uses valid language codes:'
   },
   views: {
     lookupByTitle: {
@@ -38,6 +40,9 @@ module.exports = {
     hasOriginator: {
       map: require('./criteria/hasOriginator').toString()
     },
+    hasDistributor: {
+      map: require('./criteria/hasDistributor').toString()
+    },
     hasMetadataAttributes: {
       map: require('./criteria/hasMetadataAttributes').toString()
     },
@@ -46,6 +51,9 @@ module.exports = {
     },
     validTemporalRange: {
       map: require('./criteria/validTemporalRange').toString()  
+    },
+    validLanguageCodes: {
+      map: require('./criteria/validLanguageCodes').toString()
     }
   },
   lists: {
