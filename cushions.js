@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 var io = require('socket.io').listen(3000),
     nano = require('nano')('http://localhost:5984'),
     _ = require('underscore');

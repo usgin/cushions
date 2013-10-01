@@ -1,8 +1,11 @@
+#!/usr/bin/env node
+
 var csv = require('csv'),
     nano = require('nano')('http://localhost:5984'),
     prompt = require('prompt'),
     validation = require('./validation'),
     fs = require('fs'),
+    path = require('path'),
 
     argv = require('optimist')
       .alias('f', 'csvPath')
@@ -59,15 +62,17 @@ function updateValidation() {
         
         var filesToAdd = [
           ['index.html', 'text/html'], 
-          ['client/couch-fort.png', 'image/png'],
-          ['client/empty-sheet.csv', 'text/csv'],
-          ['client/autocorrect.js', 'text/javascript'],
-          ['client/underscore.min.js', 'text/javascript'],
-          ['client/underscore-min.map', 'application/json']
+          [path.join('client','couch-fort.png'), 'image/png'],
+          [path.join('client','empty-sheet.csv'), 'text/csv'],
+          [path.join('client','autocorrect.js'), 'text/javascript'],
+          [path.join('client','underscore.min.js'), 'text/javascript'],
+          [path.join('client','underscore-min.map'), 'application/json']
         ];
         
         function addFile(rev, filename, filetype, callback) {
-          fs.readFile('validation/' + filename, function (err, data) {
+          filename = path.join(__dirname, 'validation', filename);
+          
+          fs.readFile(filename, function (err, data) {
             if (err) { callback(err); return; }
             db.attachment.insert(
               '_design/validation', 
