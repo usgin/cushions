@@ -1,6 +1,6 @@
 {
   "name": "cushions",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Validate CSV files and convert them to metadata from the comfort of your CouchDB.",
   "main": "index.js",
   "scripts": {
@@ -22,6 +22,11 @@
   "bugs": {
     "url": "https://github.com/usgin/cushions/issues"
   },
+  "bin": {
+    "cushions": "./cushions.js",
+    "stuffing": "./stuffing.js"
+  },
+  "preferGlobal": true,
   "dependencies": {
     "nano": "~4.1.3",
     "optimist": "~0.6.0",
