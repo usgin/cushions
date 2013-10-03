@@ -25,24 +25,24 @@ You can also install these pre-requisites in other ways (Homebrew or apt-get, or
 
 ### This Application
 
-Now remember those icons that Node.js installation put on your Desktop? You'll need to run the one called "" in order to install Cushions. Double-clicking this will open a command prompt. If you're using a Unix-style system you probably don't need to worry about this, just open a command prompt. You'll have to use the command prompt, because its good for you and it is totally not hard at all.
+Open a command prompt. You'll have to use the command prompt, because its good for you and it is totally not hard at all.
 
 1. Type `npm install -g cushions`. You can copy/paste if you'd like to, but you might find typing to be more rewarding.
 2. Installed!
 
 ## Loading Data
 
-You'll still need that Node.js command prompt open, and you'll need a [CSV file that at least tries to conform to our compilation template](http://schemas.usgin.org/models/#Metadata). You'll need to know the path to your CSV file. Something like `C:\Users\Ryan\Documents\my-csv-file.csv` is probably what you'll be looking for.
+You'll still need that command prompt open, and you'll need a [CSV file that at least tries to conform to our compilation template](http://schemas.usgin.org/models/#Metadata). You'll need to know the path to your CSV file. Something like `C:\Users\Ryan\Documents\my-csv-file.csv` is probably what you'll be looking for.
 
 Now you've got that in place, you're going to need to be sure you've got CouchDB turned on (check that http://localhost:5984 gives you a little JSON).
 
 Okay, so load some data:
 
-    stuffing -d your-new-database -i path-to-your-csv
+    stuffing -d your-new-database -f path-to-your-csv
     
 So, that might end up looking like this:
 
-    stuffing -d stanford -i C:\Users\Ryan\Documents\stanford-metadata.csv
+    stuffing -d stanford -f C:\Users\Ryan\Documents\stanford-metadata.csv
     
 This will create a database called `stanford` and load records into it from the CSV file at `C:\Users\Ryan\Documents\stanford-metadata.csv`.
     
@@ -54,7 +54,7 @@ You need to turn on Cushions now. From a command prompt type:
 
     cushions
     
-If you see `info  - socket.io started`, then it worked. Leave that command prompt open while you work.
+If you see `info - socket.io started`, then it worked. Leave that command prompt alone while you work.
 
 Now Cushions are ready to protect you: your data is loaded into CouchDB, and it is ready to be validated. Go to this URL in your web-browser:
 
