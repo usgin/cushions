@@ -1,9 +1,8 @@
 #!/usr/bin/env node
-
 var csv = require('csv'),
     nano = require('nano')('http://localhost:5984'),
     prompt = require('prompt'),
-    validation = require('./validation'),
+    validation = require('../validation'),
     fs = require('fs'),
     path = require('path'),
 
