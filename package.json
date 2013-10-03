@@ -23,8 +23,8 @@
     "url": "https://github.com/usgin/cushions/issues"
   },
   "bin": {
-    "cushions": "./cushions.js",
-    "stuffing": "./stuffing.js"
+    "cushions": "./bin/cushions.js",
+    "stuffing": "./bin/stuffing.js"
   },
   "preferGlobal": true,
   "dependencies": {
