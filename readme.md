@@ -13,11 +13,13 @@ You can find an installer package at http://nodejs.org/download that is appropri
 - [I have a 64-bit system (most AZGS employees)](http://nodejs.org/dist/v0.10.20/x64/node-v0.10.20-x64.msi)
 - [I have a 32-bit system](http://nodejs.org/dist/v0.10.20/node-v0.10.20-x86.msi)
 
-Just download and run the installer. It will put some icons on your desktop that you'll need later to launch this application.
+Just download and run the installer. You can verify that it worked by opening a command prompt and typing `node`. If there are no errors and the prompt changes to a `>`, then it worked.
 
 ### CouchDB
 
 You can find an installer package at https://couchdb.apache.org/#download that is appropriate for your computer. After clicking one of the links, it will ask you to choose a "mirror", but you should just take the first one that it suggests for you. For our Windows users, this will get you an `.exe` file that you can execute to install CouchDB.
+
+During installation, choose the default options to run CouchDB as a service, and to start the service automatically. Once the installation is complete, you can verify that it installed correctly by pointing your web browser to http://localhost:5984/_utils.
 
 You can also install these pre-requisites in other ways (Homebrew or apt-get, or whatever), as long as you know how to use them properly.
 
@@ -32,7 +34,7 @@ Now remember those icons that Node.js installation put on your Desktop? You'll n
 
 You'll still need that Node.js command prompt open, and you'll need a [CSV file that at least tries to conform to our compilation template](http://schemas.usgin.org/models/#Metadata). You'll need to know the path to your CSV file. Something like `C:\Users\Ryan\Documents\my-csv-file.csv` is probably what you'll be looking for.
 
-Now you've got that in place, you're going to need to be sure you've got CouchDB turned on.
+Now you've got that in place, you're going to need to be sure you've got CouchDB turned on (check that http://localhost:5984 gives you a little JSON).
 
 Okay, so load some data:
 
@@ -42,17 +44,19 @@ So, that might end up looking like this:
 
     stuffing -d stanford -i C:\Users\Ryan\Documents\stanford-metadata.csv
     
+This will create a database called `stanford` and load records into it from the CSV file at `C:\Users\Ryan\Documents\stanford-metadata.csv`.
+    
 Loading will take a little bit of time, depending on the number of records. It will let you know how long it took when its done. Expect it to take about 30 seconds for about 13,000 records.
 
 ## Validating Data
 
-You need to turn on Cushions now. From that Node.js command prompt type:
+You need to turn on Cushions now. From a command prompt type:
 
     cushions
     
-Okay, that was easy. Leave that window open while you work.
+If you see `info  - socket.io started`, then it worked. Leave that command prompt open while you work.
 
-Now Cushions are ready to protect you, and your data is loaded into CouchDB, and it is ready to get validated. Go to this URL in your web-browser:
+Now Cushions are ready to protect you: your data is loaded into CouchDB, and it is ready to be validated. Go to this URL in your web-browser:
 
     http://localhost:5984/your-database-name/_design/validation/index.html
     
