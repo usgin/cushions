@@ -2,40 +2,104 @@
 
 var io = require('socket.io').listen(3000),
     nano = require('nano')('http://localhost:5984'),
-    _ = require('underscore');
+    _ = require('lodash'),
+    async = require('async');
 
 io.sockets.on('connection', function (socket) {
 
   socket.on('autocorrect', function (dbName, corrections) {
     autoCorrect(socket, dbName, corrections);
   });
+  
 });
 
-function autoCorrect(socket, dbName, corrections) {
-  var db = nano.use(dbName),
-      suggestions = corrections || {};
+function doCorrections(socket, db, corrections) {
+  corrections = corrections || {};
+  var ids = _.keys(corrections);
   
-  function doCorrections() {
-    var ids = _.keys(suggestions),
-        i = 0;
+  socket.emit('fixingRecords', ids.length);
+  
+  
+  
+  async.each(ids, iterator, finished)
+  
+  
+  function iterator(id, callback) {
+    db.get(id, gotDoc);
     
-    socket.emit('fixingRecords', ids.length);
+    function gotDoc(err, doc) {
+      if (err) { 
+        socket.emit('error', err); 
+        callback(err); 
+      } else {
+        _.extend(doc, corrections[id]);
+        db.insert(doc, doc._id, updatedDoc);
+      }
+    }
     
-    _.each(ids, function (id) {
-      db.get(id, function (err, doc) {
-        db.insert(_.extend(doc, suggestions[id]), id, function (err, response) {
-          if (!err && i % 100 === 0) { socket.emit('fixedRecord', i); }
-          else if (err) { socket.emit('error', err); }
-          
-          i++;
-          if (i === ids.length) { socket.emit('allFixed'); }
-        });
-      });
-    }); 
+    function updatedDoc(err, response) {
+      if (!err && i % 100 === 0) { socket.emit('fixedRecord', i); }
+      else if (err) { socket.emit('error', err); }
+      callback(err);
+    }
   }
   
-  if (_.keys(suggestions).length === 0) {
+  _.forOwn(corrections, function (id) { db.get(id, gotDoc); });
+  
+  
+  
+  function updatedDoc(err, response) {
+    if (!err && i % 100 === 0) { socket.emit('fixedRecord', i); }
+    else if (err) { socket.emit('error', err); }
+    isFinished();
+  }
+}
+
+function gatherCorrections(socket, db) {
+  var corrections = {};
+  
+  db.get('_design/validation', gotDesignDoc);
+  
+  function gotDesignDoc(err, design) {
+    if (err) { socket.emit('error', err); return; }
+    
+    var criteria = _.keys(design.criteria),
+        i = 0, finished = criteria.length;
+    
+    socket.emit('gatheringSuggestions', finished);
+    
+    isFinished(false);
+    
+    function isFinished(step) {
+      step = step || true;
+      if (step) { i++; }
+      if (i === finished  || finished === 0) { 
+        socket.emit('gatheredSuggestions', corrections); 
+      }
+    }
+    
+    
+    
+    
+    
+  }
+}
+
+function autoCorrect(socket, dbName, corrections) {
+  var db = nano.use(dbName);
+  corrections = corrections || {};
+  
+  if (_.isEmpty(corrections)) {
     // If no suggestions were passed in, assume we should correct all
+    
+  }
+  
+  else {
+    // Was given some corrections, so just run those
+    doCorrections(socket, db, corrections);
+  }
+}
+/*
     db.get('_design/validation', function (err, design) {
       if (err) { socket.emit('error', err); return; }
       
