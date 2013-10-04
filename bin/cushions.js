@@ -16,29 +16,28 @@ function Corrector(socket, dbName) {
       recordsFixed = 0;
   
   function eachView(viewName, callback) {
-    db.view('validation', viewName, function (err, response) {
+    db.view('validation', viewName, {key: false}, function (err, response) {
       if (err) { callback(err); return; }
       
-      var corrections = _.map(response.rows, function (row) {
-        return {id: row.id, suggestion: row.value.suggestion};
+      var fixes = [];
+      _.each(response.rows, function (row) {
+        if (row.value.suggestion) {
+          fixes.push({id: row.id, suggestion: row.value.suggestion});
+        }
       });
       
-      corrections = _.filter(corrections, function (correction) {
-        return correction.suggestion;  
-      });
-      
-      callback(null, corrections);
       socket.emit('finishedCriteria');
+      callback(null, fixes);
     });
   }
   
   function fixOne(id, callback) {
-    var corrections = corrections[id] || {};
+    var fixes = corrections[id] || {};
     
     db.get(id, function (err, doc) {
       if (err) { callback(err); return; }
       
-      _.extend(doc, corrections);
+      _.extend(doc, fixes);
       db.insert(doc, id, function (err, response) {
         recordsFixed++;
         if (!err && recordsFixed % 100 === 0) { socket.emit('fixedRecord', recordsFixed); }
@@ -50,7 +49,7 @@ function Corrector(socket, dbName) {
   
   var corrector = {
     autoFix: function () {
-      this.gatherCorrections(function (err, corrections) {
+      this.gatherCorrections(function (err, fixes) {
         if (err) { socket.emit('error', err); return; }
         corrector.fix();
       });
@@ -63,18 +62,15 @@ function Corrector(socket, dbName) {
         var viewNames = _.keys(design.criteria);
         socket.emit('gatheringSuggestions', viewNames.length);
         async.map(viewNames, eachView, function (err, results) {
-          _.each(results, function (criteriaResult) {
-            _.each(criteriaResult, function (result) {
-              if (_.has(corrections, result.id)) {
-                _.extend(corrections[result.id], result.suggestion);
-              } else {
-                corrections[result.id] = result.suggestion;
-              }
+          _.each(results, function (result) {
+            _.each(result, function (correction) {
+              var id = correction.id, suggestion = correction.suggestion;
+              corrections[id] = _.extend(suggestion, corrections[id] || {});
             });
           });
           
-          callback(err, corrections);
           socket.emit('gatheredSuggestions');
+          callback(err, corrections);
         });
       });
     },
@@ -83,9 +79,10 @@ function Corrector(socket, dbName) {
       var ids = _.keys(corrections);
       
       socket.emit('fixingRecords', ids.length);
-      async.each(ids, fixOne, function () {
+      async.eachLimit(ids, 100, fixOne, function () {
         socket.emit('allFixed');
         recordsFixed = 0;
+        corrections = {};
       });
     }
   };

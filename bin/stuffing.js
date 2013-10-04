@@ -69,13 +69,13 @@ function updateValidation() {
         ];
         
         function addFile(rev, filename, filetype, callback) {
-          filename = path.join(__dirname, 'validation', filename);
+          filename = path.resolve(__dirname, '..', 'validation', filename);
           
           fs.readFile(filename, function (err, data) {
             if (err) { callback(err); return; }
             db.attachment.insert(
               '_design/validation', 
-              filename.replace('client/', ''), 
+              path.basename(filename), 
               data, filetype, { rev: rev }, callback
             );
           });
