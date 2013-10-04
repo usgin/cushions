@@ -1,13 +1,14 @@
 module.exports = function (head, req) {
   start({ 'headers': { 'Content-type': 'text/xml' } });
   send('<?xml version="1.0" encoding="UTF-8"?>');
+  send('<?xml-stylesheet type="text/xsl" href="toIso.xslt"?>');
   send('<metadata>\n');
   
   while (row = getRow()) {
     if (row.hasOwnProperty('doc')) {
       send('<record>\n');
       Object.keys(row.doc).forEach(function (key) {
-        var value = row.doc[key];
+        var value = row.doc[key].toString();
         
         // Deal with CouchDB ID
         if (key === '_id') {
@@ -15,7 +16,7 @@ module.exports = function (head, req) {
         }
         
         // Ignore any other CouchDB fields
-        if (key.indexOf('_') !== 0) {
+        if (key.indexOf('_') !== 0 && key !== '') {
           // String cleanup
           value = value
             // XML replacements

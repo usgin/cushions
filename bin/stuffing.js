@@ -65,7 +65,8 @@ function updateValidation() {
           [path.join('client','empty-sheet.csv'), 'text/csv'],
           [path.join('client','autocorrect.js'), 'text/javascript'],
           [path.join('client','underscore.min.js'), 'text/javascript'],
-          [path.join('client','underscore-min.map'), 'application/json']
+          [path.join('client','underscore-min.map'), 'application/json'],
+          [path.join('client', 'toIso.xslt'), 'text/xsl']
         ];
         
         function addFile(rev, filename, filetype, callback) {

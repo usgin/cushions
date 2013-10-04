@@ -60,5 +60,8 @@ module.exports = {
     asXml: require('./lists/asXml').toString(),
     asCsv: require('./lists/asCsv').toString(),
     asGeoJson: require('./lists/asGeoJson.js').toString()
+  },
+  shows: {
+    asXml: require('./shows/asXml').toString()  
   }
 };
