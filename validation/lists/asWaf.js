@@ -4,7 +4,7 @@ module.exports = function (head, req) {
   send('<html><head><title>Padded Metadata</title></head><body><ul>');
   
   while (row = getRow()) {
-    send('<li><a href="../../_show/asXml/' + row.id + '">' + row.doc.title + '</a></li>');
+    send('<li><a href="../../_rewrite/' + row.id + '/iso.xml">' + row.doc.title + '</a></li>');
   }
   
   send('</ul></body></html>');

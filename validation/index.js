@@ -64,5 +64,13 @@ module.exports = {
   },
   shows: {
     asXml: require('./shows/asXml').toString()  
-  }
+  },
+  rewrites: [
+    {
+      from: '/:id/iso.xml',
+      to: '/_show/asXml/:id',
+      method: 'GET',
+      query: {}
+    }
+  ]
 };
