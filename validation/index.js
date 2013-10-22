@@ -20,7 +20,7 @@ module.exports = {
       map: require('./lookups/byTitle').toString()
     },
     probablyNotTruncated: {
-      map: require('./criteria/probablyNotTruncated').toString()  
+      map: require('./criteria/probablyNotTruncated').toString()
     },
     hasTitle: {
       map: require('./criteria/hasTitle').toString()
@@ -50,7 +50,7 @@ module.exports = {
       map: require('./criteria/validPhoneNumbers').toString()
     },
     validTemporalRange: {
-      map: require('./criteria/validTemporalRange').toString()  
+      map: require('./criteria/validTemporalRange').toString()
     },
     validLanguageCodes: {
       map: require('./criteria/validLanguageCodes').toString()
@@ -63,7 +63,7 @@ module.exports = {
     asWaf: require('./lists/asWaf').toString()
   },
   shows: {
-    asXml: require('./shows/asXml').toString()  
+    asXml: require('./shows/asXml').toString()
   },
   rewrites: [
     {
@@ -71,6 +71,12 @@ module.exports = {
       to: '/_show/asXml/:id',
       method: 'GET',
       query: {}
+    },
+    {
+      from: '/export/cushions.csv',
+      to: '/_list/asCsv/lookupByTitle',
+      method: 'GET',
+      query: {include_docs: 'true'}
     }
   ]
 };

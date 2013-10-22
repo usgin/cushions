@@ -1,6 +1,6 @@
 {
   "name": "cushions",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Validate CSV files and convert them to metadata from the comfort of your CouchDB.",
   "main": "index.js",
   "scripts": {

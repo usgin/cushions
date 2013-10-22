@@ -6,7 +6,7 @@
     <title>Build a fort</title>
     <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
     <style type="text/css">
-      body { 
+      body {
         margin: 25px; 0px;
         background-image: url('couch-fort.png');
         background-repeat: no-repeat;
@@ -33,60 +33,60 @@
       <li>Compile metadata <a href="empty-sheet.csv">with this spreadsheet</a>.</li>
     </ul>
     <h2 id="validation-message">Your metadata...</h2>
-    
+
     <div id="bulk-options"></div>
-    
+
     <div id="progress-container"></div>
-    
+
     <ul id="validation"></ul>
-    
+
     <h2>Mom says put the Cushions back?</h2>
     <ul id="dumps">
       <a href="_list/asXml/lookupByTitle?include_docs=true" id="get-xml" class="btn btn-primary">Get XML</a>
-      <a href="_list/asCsv/lookupByTitle?include_docs=true" id="get-csv" class="btn btn-primary">Get CSV</a>
+      <a href="_rewrite/export/cushions.csv" id="get-csv" class="btn btn-primary">Get CSV</a>
       <a href="_list/asGeoJson/lookupByTitle?include_docs=true" id="get-geojson" class="btn btn-primary">Get GeoJSON</a>
     </ul>
-    
+
     <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
     <script src="http://localhost:3000/socket.io/socket.io.js"></script>
     <script src="underscore.min.js"></script>
     <script src="autocorrect.js"></script>
-    
+
     <script>
       d3.json(window.location.pathname.replace('index.html', ''), function (err, design) {
         if (err) { console.log(err); return; }
-        
+
         var criteria = _.keys(design.criteria);
-        
+
         d3.select('#validation').selectAll('li')
             .data(criteria)
           .enter().append('li')
             .attr('id', function (d) { return d; })
           .append('h3')
             .text(function (d) { return design.criteria[d]; });
-        
+
         d3.select('#validation').selectAll('li')
           .append('ul');
-          
+
         _.each(criteria, function (viewName) {
           var baseUrl = '_view/' + viewName + '?key=',
               invalidUrl = baseUrl + 'false',
               validUrl = baseUrl + 'true';
-              
+
           // Start request for invalid records
           d3.json(invalidUrl, function (err, response) {
             if (err) { console.log(err); return; }
-            
+
             var winner = response.rows.length === 0;
-            
+
             if (!winner) {
               d3.select('#validation-message').text("I'm sorry, your metadata is ugly...");
-              
+
               var opts = d3.select('#bulk-options').selectAll('button')
                 .data([
-                  { 
-                    id: 'auto-correct-all', 
-                    cls: 'btn-success', 
+                  {
+                    id: 'auto-correct-all',
+                    cls: 'btn-success',
                     text: 'Apply Automatic Corrections',
                     onclick: runCorrections
                   }, {
@@ -104,16 +104,16 @@
                   .on('click', function (d) { d.onclick(); })
                   .text(function(d) { return d.text; })
             }
-            
+
             var urls = [], ids = [], responses = {}, fixesAvailable = false;
-            
+
             _.each(response.rows, function (row) {
               ids.push(row.id);
               urls.push(window.location.pathname.replace('_design/validation', row.id));
               responses[row.id] = row.value;
               fixesAvailable = row.value.hasOwnProperty('suggestion');
             });
-            
+
             var result = d3.select('#' + viewName).select('ul')
               .append('li');
             result.append('span')
@@ -121,27 +121,27 @@
               .classed('label-info', winner)
               .classed('label-danger', !winner)
               .text(winner ? 'Yay' : 'Crap');
-              
-            var message = fixesAvailable && !winner ? 
+
+            var message = fixesAvailable && !winner ?
               urls.length + ' rows are invalid, but automatic corrections are available.' :
               urls.length + ' rows are invalid.';
-              
+
             result.append('a')
               .attr('href', invalidUrl)
               .classed('text-danger', !winner)
               .text(message);
           });
-          
+
           // Start request for valid records
           d3.json(validUrl, function (err, response) {
             if (err) { console.log(err); return; }
-            
+
             var winner = response.rows.length > 0;
-            
+
             urls = _.map(response.rows, function (row) {
               return window.location.pathname.replace('_design/validation', row.id);
             });
-            
+
             var result = d3.select('#' + viewName).select('ul')
               .append('li');
             result.append('span')
