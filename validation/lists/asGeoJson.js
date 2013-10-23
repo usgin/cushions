@@ -23,7 +23,7 @@ module.exports = function (head, req) {
   }
   
   var row = getRow();
-  if (row.hasOwnProperty('doc')) {
+  if (row && row.hasOwnProperty('doc')) {
     send(toGeoJson(row.doc));
          
     var aRow;

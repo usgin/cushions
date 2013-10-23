@@ -77,6 +77,24 @@ module.exports = {
       to: '/_list/asCsv/lookupByTitle',
       method: 'GET',
       query: {include_docs: 'true'}
+    },
+    {
+      from: '/export/cushions.xml',
+      to: '/_list/asXml/lookupByTitle',
+      method: 'GET',
+      query: {include_docs: 'true'}
+    },
+    {
+      from: '/export/cushions.geojson',
+      to: '/_list/asGeoJson/lookupByTitle',
+      method: 'GET',
+      query: {include_docs: 'true'}
+    },
+    {
+      from: '/export/toIso.xslt',
+      to: '/toIso.xslt',
+      method: 'GET',
+      query: {}
     }
   ]
 };
