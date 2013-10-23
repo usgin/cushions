@@ -5,7 +5,8 @@ module.exports = function (doc, req) {
   body += '<record>';
   
   Object.keys(doc).forEach(function (key) {
-    var value = doc[key].toString();
+    var value = doc[key].toString(),
+        values;
     
     // Deal with CouchDB ID
     if (key === '_id') {
@@ -15,7 +16,7 @@ module.exports = function (doc, req) {
     // Ignore any other CouchDB fields
     if (key.indexOf('_') !== 0 && key !== '') {
       // String cleanup
-      value = value
+      value = decodeURIComponent(value)
         // XML replacements
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
@@ -28,9 +29,13 @@ module.exports = function (doc, req) {
       // UTF-8-ify?
       value = unescape(encodeURIComponent(value));
       
-      body += '<' + key + '>';
-      body += value;
-      body += '</' + key + '>\n';
+      values = value.split('|');
+
+      values.forEach(function (v) {
+        send('<' + key + '>');
+        send(v.trim());
+        send('</' + key + '>\n');
+      });
     }
   });
   
