@@ -32,9 +32,9 @@ module.exports = function (doc, req) {
       values = value.split('|');
 
       values.forEach(function (v) {
-        send('<' + key + '>');
-        send(v.trim());
-        send('</' + key + '>\n');
+        body += '<' + key + '>';
+        body += v.trim();
+        body += '</' + key + '>';
       });
     }
   });
