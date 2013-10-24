@@ -122,10 +122,20 @@ function loadCsv() {
   csv()
     .from.path(argv.csvPath, {columns:true})
     .transform(function (row, index, callback) {
-      db.insert(row, function (err, response) {
-        if (err) { console.log(err); return; }
-        callback(null, []);
+      var isEmpty = true;
+
+      Object.keys(row).forEach(function (k) {
+        if (row[k] !== '') isEmpty = false;
       });
+
+      if (!isEmpty) {
+        db.insert(row, function (err, response) {
+          if (err) { console.log(err); return; }
+          callback(null, []);
+        });
+      } else {
+        callback(null, []);
+      }
     })
     .to(function (data) { 
       console.log('Loaded ' + data.length + ' records.'); 
