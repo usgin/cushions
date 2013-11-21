@@ -13,7 +13,8 @@ module.exports = {
     'hasMetadataAttributes': '...has a metadata ID and date:',
     'validPhoneNumbers': '...contains valid phone numbers:',
     'validTemporalRange': '...contains a valid temporal range:',
-    'validLanguageCodes': '...uses valid language codes:'
+    'validLanguageCodes': '...uses valid language codes:',
+    'validTitleDesc': '...title and descriptions match:'
   },
   views: {
     lookupByTitle: {
@@ -54,7 +55,10 @@ module.exports = {
     },
     validLanguageCodes: {
       map: require('./criteria/validLanguageCodes').toString()
-    }
+  },
+    validTitleDesc: {
+	  map: require('./criteria/validTitleDesc').toString()
+  }
   },
   lists: {
     asXml: require('./lists/asXml').toString(),
