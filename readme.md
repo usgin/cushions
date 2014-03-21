@@ -86,4 +86,57 @@ If you're lucky, your problem can be automatically corrected. In that case, ther
 
 ### How do I change the validation / correction criteria?
 
-Read some other documentation that I haven't written just yet.
+Validation criteria are [CouchDB views](http://wiki.apache.org/couchdb/HTTP_view_API) that satisfy some specific constraints. They are listed in the [validation/criteria folder](https://github.com/usgin/cushions/tree/master/validation/criteria), each document representing a single condition. Adding a new rule means:
+
+1. Writing a criteria file in that directory that follows the correct syntax (see below)
+2. Referencing that file [here in index.js](https://github.com/usgin/cushions/blob/master/validation/index.js#L18-L58)
+
+[hasTitle.js](https://github.com/usgin/cushions/blob/master/validation/criteria/hasTitle.js) is a very simple example of the syntax you must follow to write a new validation rule.
+
+```javascript
+// All criteria export a function that will recieve a single doc (that is, a metadata record)
+// Think of this function as follows:
+//   When a metadata record is run through, this function will return true/false if it passes/fails
+//   and will also return an object that may suggest a solution to any validation problems
+module.exports = function (doc) {
+  // Within this function, you can do whatever kinds of validation you need to do, but in the end
+  //   you must use the following syntax to send the result:
+  //   emit(boolean, object)
+  //   ... as in emit(did-it-pass?, { suggestions-to-fix (if there are any) })
+  
+  //  In this case,
+  //   doc.hasOwnProperty('title') && doc.title.length > 0
+  //   ... tells us true or false -- true if the metadata record has a "title" property, and also 
+  //   the length of the title's value is greater than zero.
+  //  In the event that a metadata record is invalid, we have no automatic suggestion as to how to
+  //   make the record valid.
+  emit(
+    doc.hasOwnProperty('title') && doc.title.length > 0,
+    {}
+  );
+};
+```
+
+For an example of a validation criteria that *does* make a suggestion about how to automatically fix an invalid record, have a look at [validPubDate.js](https://github.com/usgin/cushions/blob/master/validation/criteria/validPubDate.js). If a result fails this validation test, an object is emitted after the boolean value. This is the `result` object. These `result` objects are of the form:
+
+```json
+{
+  "problem": "An optional string giving an in-depth description of what the problem was / why this is invalid",
+  "suggestion": {
+    "name-of-a-field": "value-to-set-that-field-to",
+    "name-of-another-field": "value-for-that-other-field"
+  }
+}
+```
+
+What you can see is that the `result` object has a `suggestion` property. This contains an object that defines what should be changed in the metadata record in order to make it valid.
+
+In the case of [validPubDate.js](https://github.com/usgin/cushions/blob/master/validation/criteria/validPubDate.js), the code attempts to make a guess about how to parse the given date and transform it into a valid ISO date. Then, it offers the suggestion by providing a result object something like this:
+
+```json
+{
+  "suggestion": {
+    "publication_date": "2014-03-02T00:10:20"
+  }
+}
+```
